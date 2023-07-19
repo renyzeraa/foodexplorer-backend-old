@@ -1,0 +1,741 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Documentação do FoodExplorer Back-end",
+    "description": "Esta é a documentação completa das rotas do FoodExplorer",
+    "version": "0.1.0",
+    "contact": {
+      "email": "murilomuller@protonmail.com"
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Criar um novo usuário",
+        "description": "Criar um novo usuário com as informações fornecidas",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso"
+          },
+          "400": {
+            "description": "Requisição inválida. Dados de entrada inválidos"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Usuários"],
+        "summary": "Atualizar usuário",
+        "description": "Atualizar os detalhes do usuário logado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso"
+          },
+          "400": {
+            "description": "Requisição inválida. Dados de entrada inválidos"
+          },
+          "401": {
+            "description": "Não autorizado. O usuário deve estar logado"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/users/{email}": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Obter usuário por e-mail",
+        "description": "Recuperar um usuário pelo endereço de e-mail",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "O endereço de e-mail do usuário",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/sessions": {
+      "post": {
+        "tags": ["Sessões"],
+        "summary": "Login do usuário",
+        "description": "Autenticar um usuário e gerar um token de acesso",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "O e-mail do usuário"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "A senha do usuário"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    },
+    "/plates": {
+      "post": {
+        "tags": ["Pratos"],
+        "summary": "Criar um novo prato",
+        "description": "Criar um novo prato com as informações fornecidas",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "O título do prato"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A descrição do prato"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "O valor do prato"
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Os ingredientes do prato",
+                    "collectionFormat": "multi"
+                  },
+                  "categories": {
+                    "type": "string",
+                    "description": "As categorias do prato"
+                  },
+                  "picture": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "A imagem do prato"
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "value",
+                  "ingredients",
+                  "categories",
+                  "picture"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prato criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida"
+          },
+          "403": {
+            "description": "Proibido"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Pratos"],
+        "summary": "Obter todos os pratos",
+        "responses": {
+          "200": {
+            "description": "Operação bem-sucedida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plate"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Erro ocorrido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plates/{id}": {
+      "get": {
+        "tags": ["Pratos"],
+        "summary": "Obter detalhes do prato",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do prato a ser recuperado",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do prato obtidos com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plate"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prato não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Pratos"],
+        "summary": "Atualizar um prato",
+        "description": "Prato atualizado",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID do prato a ser atualizado",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "O título do prato"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "A descrição do prato"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "O valor do prato"
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Os ingredientes do prato",
+                    "collectionFormat": "multi"
+                  },
+                  "categories": {
+                    "type": "string",
+                    "description": "As categorias do prato"
+                  },
+                  "picture": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "A imagem do prato"
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "value",
+                  "ingredients",
+                  "categories",
+                  "picture"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prato atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Requisição inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Prato não encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/favorites/favorite_plates": {
+      "post": {
+        "tags": ["Favoritos"],
+        "summary": "Adicionar um prato aos favoritos do usuário",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoritePlate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Prato marcado como favorito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de sucesso"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro ao marcar o prato como favorito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Favoritos"],
+        "summary": "Obter a lista de pratos favoritos do usuário",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pratos favoritos do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plate"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token de acesso inválido"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Excluir um prato dos favoritos",
+        "tags": ["Favoritos"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "ID do prato a ser excluído dos favoritos",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "plate_id": {
+                    "type": "integer",
+                    "description": "ID do prato a ser excluído"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prato removido dos favoritos"
+          },
+          "400": {
+            "description": "Prato não está marcado como favorito"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Anakin skywalker",
+            "description": "O nome do usuário"
+          },
+          "email": {
+            "type": "string",
+            "example": "AnakynSkywalker@republicagalactica.com",
+            "description": "O endereço de e-mail do usuário"
+          },
+          "password": {
+            "type": "string",
+            "example": "Code66",
+            "description": "A senha do usuário"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se o usuário é um administrador"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "UpdateUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Darth Vader",
+            "description": "O nome atualizado do usuário"
+          },
+          "email": {
+            "type": "string",
+            "example": "DarthVader@imperiogalactico.com",
+            "description": "O endereço de e-mail atualizado do usuário"
+          },
+          "password": {
+            "type": "string",
+            "example": "Luke and Leia i love you",
+            "description": "A senha atualizada do usuário"
+          },
+          "old_password": {
+            "type": "string",
+            "example": "Code66",
+            "description": "A senha antiga do usuário (obrigatória ao atualizar a senha)"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indica se o usuário é um administrador"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1,
+                "description": "O identificador único do usuário"
+              },
+              "name": {
+                "type": "string",
+                "example": "Anakyn Skywalker",
+                "description": "O nome do usuário"
+              },
+              "email": {
+                "type": "string",
+                "example": "AnakynSkywalker@republicagalactica.com",
+                "description": "O e-mail do usuário"
+              }
+            }
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "O token de acesso para autenticação"
+          }
+        }
+      },
+      "Plate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "O ID do prato"
+          },
+          "title": {
+            "type": "string",
+            "description": "O título do prato"
+          },
+          "description": {
+            "type": "string",
+            "description": "A descrição do prato"
+          },
+          "value": {
+            "type": "number",
+            "description": "O valor do prato"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Os ingredientes do prato"
+          },
+          "picture": {
+            "type": "string",
+            "description": "O nome do arquivo de imagem do prato"
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "O ID do usuário que criou o prato"
+          },
+          "category_id": {
+            "type": "integer",
+            "description": "O ID da categoria associada ao prato"
+          }
+        }
+      },
+      "PlateUpdate": {
+        "type": "object",
+        "properties": {
+          "picture": {
+            "type": "string",
+            "format": "binary",
+            "description": "A imagem atualizada do prato"
+          },
+          "title": {
+            "type": "string",
+            "description": "O título atualizado do prato"
+          },
+          "description": {
+            "type": "string",
+            "description": "A descrição atualizada do prato"
+          },
+          "value": {
+            "type": "number",
+            "description": "O valor atualizado do prato"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Os ingredientes atualizados do prato",
+            "collectionFormat": "multi"
+          },
+          "categories": {
+            "type": "string",
+            "description": "As categorias atualizadas do prato"
+          }
+        }
+      },
+      "FavoritePlate": {
+        "type": "object",
+        "properties": {
+          "plate_id": {
+            "type": "integer",
+            "description": "ID do prato a ser marcado como favorito"
+          }
+        },
+        "required": ["plate_id"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Mensagem de erro"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}

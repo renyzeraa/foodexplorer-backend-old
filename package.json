@@ -1,0 +1,43 @@
+{
+  "name": "foodexplorer_back-end",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/app.js",
+    "migrate": "knex migrate:latest ",
+    "create-migrate": "npx knex migrate:make",
+    "dev": "nodemon ./src/app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MullerHub/FoodExplorer_Back-end.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MullerHub/FoodExplorer_Back-end/issues"
+  },
+  "homepage": "https://github.com/MullerHub/FoodExplorer_Back-end#readme",
+  "dependencies": {
+    "@planetscale/database": "^1.7.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.1.0",
+    "express": "^4.18.2",
+    "express-async-errors": "^3.1.1",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^2.4.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "path": "^0.12.7",
+    "sqlite": "^4.2.0",
+    "sqlite3": "^5.1.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22",
+    "swagger-ui-express": "^4.6.3"
+  }
+}

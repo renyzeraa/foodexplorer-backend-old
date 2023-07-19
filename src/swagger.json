@@ -1,0 +1,741 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FoodExplorer Documentation back-end",
+    "description": "This is full documentation for FoodExplorer routes",
+    "version": "0.1.0",
+    "contact": {
+      "email": "murilomuller@protonmail.com"
+    }
+  },
+  "paths": {
+    "/users": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create a new user",
+        "description": "Create a new user with the provided information",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully"
+          },
+          "400": {
+            "description": "Bad request. Invalid input data"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update user",
+        "description": "Update the details of the logged-in user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUser"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully"
+          },
+          "400": {
+            "description": "Bad request. Invalid input data"
+          },
+          "401": {
+            "description": "Unauthorized. User must be logged in"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/users/{email}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by email",
+        "description": "Retrieve a user by their email address",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "The email address of the user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/sessions": {
+      "post": {
+        "tags": ["Sessions"],
+        "summary": "User login",
+        "description": "Authenticate a user and generate an access token",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "The email of the user"
+                  },
+                  "password": {
+                    "type": "string",
+                    "description": "The password of the user"
+                  }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful login",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/plates": {
+      "post": {
+        "tags": ["Plates"],
+        "summary": "Create a new plate",
+        "description": "Create a new plate with the provided information",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the plate"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the plate"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The value of the plate"
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The ingredients of the plate",
+                    "collectionFormat": "multi"
+                  },
+                  "categories": {
+                    "type": "string",
+                    "description": "The categories of the plate"
+                  },
+                  "picture": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The picture of the plate"
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "value",
+                  "ingredients",
+                  "categories",
+                  "picture"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plate created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Plates"],
+        "summary": "Get all plates",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plate"
+                  }
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Error occurred",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plates/{id}": {
+      "get": {
+        "tags": ["Plates"],
+        "summary": "Get plate details",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the plate to retrieve",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plate details retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plate"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plate not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Plates"],
+        "summary": "Update a plate",
+        "description": "Updated plate",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the plate to update",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "The title of the plate"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "The description of the plate"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The value of the plate"
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The ingredients of the plate",
+                    "collectionFormat": "multi"
+                  },
+                  "categories": {
+                    "type": "string",
+                    "description": "The categories of the plate"
+                  },
+                  "picture": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The picture of the plate"
+                  }
+                },
+                "required": [
+                  "title",
+                  "description",
+                  "value",
+                  "ingredients",
+                  "categories",
+                  "picture"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plate updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Plate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Plate not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/favorites/favorite_plates": {
+      "post": {
+        "tags": ["Favorites"],
+        "summary": "Adicionar um prato aos favoritos do usuário",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FavoritePlate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Prato marcado como favorito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "description": "Mensagem de sucesso"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro ao marcar o prato como favorito",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Favorites"],
+        "summary": "Obter a lista de pratos favoritos do usuário",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "description": "ID do usuário",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de pratos favoritos do usuário",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Plate"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Não autorizado - Token de acesso inválido"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Exclui um prato dos favoritos",
+        "tags": ["Favorites"],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "ID do prato a ser excluído dos favoritos",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "plate_id": {
+                    "type": "integer",
+                    "description": "ID do prato a ser excluído"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prato removido dos favoritos"
+          },
+          "400": {
+            "description": "Prato não está marcado como favorito"
+          },
+          "401": {
+            "description": "Não autorizado"
+          },
+          "500": {
+            "description": "Erro interno do servidor"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "The name of the user"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com",
+            "description": "The email address of the user"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "The password of the user"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indicates if the user is an admin"
+          }
+        },
+        "required": ["name", "email", "password"]
+      },
+      "UpdateUser": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "The updated name of the user"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com",
+            "description": "The updated email address of the user"
+          },
+          "password": {
+            "type": "string",
+            "example": "newpassword123",
+            "description": "The updated password of the user"
+          },
+          "old_password": {
+            "type": "string",
+            "example": "oldpassword123",
+            "description": "The old password of the user (required when updating password)"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true,
+            "description": "Indicates if the user is an admin"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "example": 1,
+                "description": "The unique identifier of the user"
+              },
+              "name": {
+                "type": "string",
+                "example": "John Doe",
+                "description": "The name of the user"
+              },
+              "email": {
+                "type": "string",
+                "example": "john.doe@example.com",
+                "description": "The email of the user"
+              }
+            }
+          },
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+            "description": "The access token for authentication"
+          }
+        }
+      },
+      "Plate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "The plate's ID"
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the plate"
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the plate"
+          },
+          "value": {
+            "type": "number",
+            "description": "The value of the plate"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The ingredients of the plate"
+          },
+          "picture": {
+            "type": "string",
+            "description": "The picture filename of the plate"
+          },
+          "user_id": {
+            "type": "integer",
+            "description": "The ID of the user who created the plate"
+          },
+          "category_id": {
+            "type": "integer",
+            "description": "The ID of the category associated with the plate"
+          }
+        }
+      },
+      "PlateUpdate": {
+        "type": "object",
+        "properties": {
+          "picture": {
+            "type": "string",
+            "format": "binary",
+            "description": "The updated picture of the plate"
+          },
+          "title": {
+            "type": "string",
+            "description": "The updated title of the plate"
+          },
+          "description": {
+            "type": "string",
+            "description": "The updated description of the plate"
+          },
+          "value": {
+            "type": "number",
+            "description": "The updated value of the plate"
+          },
+          "ingredients": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The updated ingredients of the plate",
+            "collectionFormat": "multi"
+          },
+          "categories": {
+            "type": "string",
+            "description": "The updated categories of the plate"
+          }
+        }
+      },
+      "FavoritePlate": {
+        "type": "object",
+        "properties": {
+          "plate_id": {
+            "type": "integer",
+            "description": "ID do prato a ser marcado como favorito"
+          }
+        },
+        "required": ["plate_id"]
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
