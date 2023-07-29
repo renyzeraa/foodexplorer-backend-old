@@ -8,12 +8,6 @@ class PlatesController {
     const user_id = req.user.id
     const picture = req.file.filename
 
-    if (!req.user.isAdmin) {
-      return res
-        .status(403)
-        .json({ error: 'Acesso negado, você não é um admin.' })
-    }
-
     const diskStorage = new DiskStorage()
 
     const filePlate = await diskStorage.saveFile(picture)
