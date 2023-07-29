@@ -1,8 +1,8 @@
 {
   "name": "foodexplorer_back-end",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Back-end do foodexplorer",
+  "main": "app.js",
   "scripts": {
     "start": "pm2-runtime start ecosystem.config.js --env production",
     "migrate": "knex migrate:latest ",
