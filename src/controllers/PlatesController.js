@@ -18,18 +18,21 @@ class PlatesController {
 
     // Busca de ingredientes estáticos já criados no back-end e retornado o id
     let ingredientIds = []
-    const ingredientSplit = ingredients.split(', ')
+    const ingredientSplit = ingredients.split(',')
 
     await Promise.all(
       ingredientSplit.map(async item => {
         const lowerCaseItem = item.toLowerCase()
-        const [ingredient] = await knex('ingredients')
+        let [ingredient] = await knex('ingredients')
           .where('name', lowerCaseItem)
           .pluck('id')
 
-        if (ingredient) {
-          ingredientIds.push(ingredient)
+        if (!ingredient) {
+          [ingredient] = await knex('ingredients')
+            .insert(lowerCaseItem)
+            .returning('id')
         }
+        ingredientIds.push(ingredient)
       })
     )
 
@@ -165,7 +168,7 @@ class PlatesController {
 
       if (ingredients) {
         const ingredientIds = []
-        const ingredientSplit = ingredients.split(', ')
+        const ingredientSplit = ingredients.split(',')
 
         await Promise.all(
           ingredientSplit.map(async item => {
