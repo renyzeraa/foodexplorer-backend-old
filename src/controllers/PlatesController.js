@@ -7,7 +7,6 @@ class PlatesController {
     const { title, description, value, ingredients, categories } = req.body
     const user_id = req.user.id
     const picture = req.file.filename
-
     const diskStorage = new DiskStorage()
 
     const filePlate = await diskStorage.saveFile(picture)
@@ -21,19 +20,24 @@ class PlatesController {
     const ingredientSplit = ingredients.split(',')
 
     await Promise.all(
-      ingredientSplit.map(async item => {
-        const lowerCaseItem = item.toLowerCase()
-        let [ingredient] = await knex('ingredients')
-          .where('name', lowerCaseItem)
-          .pluck('id')
+      ingredientSplit.map(async (item) => {
+        const trimmedItem = item.trim();
+        const lowerCaseItem = trimmedItem.toLowerCase();
+
+        let [ingredient] = await knex("ingredients")
+          .where("name", lowerCaseItem)
+          .pluck("id");
 
         if (!ingredient) {
-          [ingredient] = await knex('ingredients')
-            .insert(lowerCaseItem)
-            .returning('id')
+          [ingredient] = await knex("ingredients")
+            .insert({ name: lowerCaseItem })
+            .returning("id");
+          ingredientIds.push(ingredient.id);
         }
-        ingredientIds.push(ingredient)
-      })
+        else {
+          ingredientIds.push(ingredient);
+        }
+      }),
     )
 
     // Verificar se pelo menos uma categoria foi fornecida
@@ -84,7 +88,6 @@ class PlatesController {
     ); */
 
     // Criação do prato
-
     const [plate] = await knex('plates')
       .insert({
         title,
@@ -171,16 +174,24 @@ class PlatesController {
         const ingredientSplit = ingredients.split(',')
 
         await Promise.all(
-          ingredientSplit.map(async item => {
-            const lowerCaseItem = item.toLowerCase()
-            const [ingredient] = await knex('ingredients')
-              .where('name', lowerCaseItem)
-              .pluck('id')
-
-            if (ingredient) {
-              ingredientIds.push(ingredient)
+          ingredientSplit.map(async (item) => {
+            const trimmedItem = item.trim();
+            const lowerCaseItem = trimmedItem.toLowerCase();
+    
+            let [ingredient] = await knex("ingredients")
+              .where("name", lowerCaseItem)
+              .pluck("id");
+    
+            if (!ingredient) {
+              [ingredient] = await knex("ingredients")
+                .insert({ name: lowerCaseItem })
+                .returning("id");
+              ingredientIds.push(ingredient.id);
             }
-          })
+            else {
+              ingredientIds.push(ingredient);
+            }
+          }),
         )
 
         updateData.ingredients = JSON.stringify(ingredientIds)
