@@ -1,5 +1,5 @@
 {
-  "name": "foodexplorer_back-end",
+  "name": "foodexplorer-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MullerHub/FoodExplorer_Back-end.git"
+    "url": "git+https://github.com/renyzeraa/foodexplorer-backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MullerHub/FoodExplorer_Back-end/issues"
+    "url": "https://github.com/renyzeraa/foodexplorer-backend/issues"
   },
-  "homepage": "https://github.com/MullerHub/FoodExplorer_Back-end#readme",
+  "homepage": "https://github.com/renyzeraa/foodexplorer-backend#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
