@@ -1,54 +1,61 @@
-require('dotenv')
-require('express-async-errors')
-const express = require('express')
-const swaggerUi = require('swagger-ui-express')
-const swagerFile = require('./swagger.json')
-const swagerFilePtBr = require('./swagger_pt-br.json')
+const dotenv = require("dotenv");
 
-const AppError = require('./utils/AppError')
-const migrationsRun = require('./database/mysql_planetScale/migrations')
-const uploadConfig = require('./configs/upload')
+// Carrega as variáveis de ambiente a partir do arquivo .env
+dotenv.config();
 
-const cors = require('cors')
-const routes = require('./routes')
+require("express-async-errors");
+const express = require("express");
+const swaggerUi = require("swagger-ui-express");
+const swagerFile = require("./swagger.json");
+const swagerFilePtBr = require("./swagger_pt-br.json");
 
-migrationsRun()
+const AppError = require("./utils/AppError");
+const migrationsRun = require("./database/sqlite/migrations");
+const uploadConfig = require("./configs/upload");
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+const cors = require("cors");
+const routes = require("./routes");
 
-app.use('/files', express.static(uploadConfig.UPLOAD_FOLDER))
+migrationsRun();
 
-app.use('/docs/en', swaggerUi.serve, (req, res) => {
-  let html = swaggerUi.generateHTML(swagerFile)
-  res.send(html)
-})
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-app.use('/docs/pt-br', swaggerUi.serve, (req, res) => {
-  let html = swaggerUi.generateHTML(swagerFilePtBr)
-  res.send(html)
-})
+app.use("/files", express.static(uploadConfig.UPLOAD_FOLDER));
 
-app.use(routes)
+app.use("/docs/en", swaggerUi.serve, (req, res) => {
+  let html = swaggerUi.generateHTML(swagerFile);
+  res.send(html);
+});
+
+app.use("/docs/pt-br", swaggerUi.serve, (req, res) => {
+  let html = swaggerUi.generateHTML(swagerFilePtBr);
+  res.send(html);
+});
+
+app.use(routes);
 
 app.use((error, req, res, next) => {
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
-      status: 'error',
-      message: error.message
-    })
+      status: "error",
+      message: error.message,
+    });
   }
 
-  console.error(error)
+  console.error(error);
 
   return res.status(500).json({
-    status: 'error',
-    message: 'Internal server error'
-  })
-})
+    status: "error",
+    message: "Internal server error",
+  });
+});
 
-const PORT = process.env.PORT || 3333
-app.listen(PORT, () => {
-  console.log('listening on port', PORT)
-})
+const test = process.env.TEST;
+
+console.log(".env funcionando =>", test);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {});
+console.log(`Server is running on port => ${PORT}`);

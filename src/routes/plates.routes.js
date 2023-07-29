@@ -17,9 +17,11 @@ platesRoutes.post(
   platesController.create,
 );
 
-platesRoutes.get("/", platesController.show);
+platesRoutes.get("/", platesController.index);
 
-platesRoutes.get("/:id", platesController.index);
+platesRoutes.get("/search", platesController.search); // Rota para pesquisa
+
+platesRoutes.get("/:id", platesController.show);
 
 platesRoutes.put(
   "/:id",
@@ -27,5 +29,7 @@ platesRoutes.put(
   upload.single("picture"),
   platesController.update,
 );
+
+platesRoutes.delete("/:id", ensureAuthenticated, platesController.delete);
 
 module.exports = platesRoutes;
