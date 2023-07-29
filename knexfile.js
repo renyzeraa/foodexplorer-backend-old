@@ -1,29 +1,28 @@
-const path = require("path");
+const path = require('path')
 
-require("dotenv").config();
-console.log("Connected to PlanetScale!");
+require('dotenv').config()
 
 module.exports = {
   development: {
-    client: "mysql",
+    client: 'mysql',
     connection: {
       host: process.env.HOSTNAME_DB,
       user: process.env.USERNAME_DB,
       password: process.env.PASSWORD_DB,
       database: process.env.DATABASE_DB,
       ssl: {
-        rejectUnauthorized: true,
-      },
+        rejectUnauthorized: true
+      }
     },
     migrations: {
       directory: path.resolve(
         __dirname,
-        "src",
-        "database",
-        "knex",
-        "migrations",
-      ),
+        'src',
+        'database',
+        'knex',
+        'migrations'
+      )
     },
-    useNullAsDefault: true,
-  },
-};
+    useNullAsDefault: true
+  }
+}
