@@ -4,7 +4,7 @@ const knex = require('../database/knex')
 
 class PlatesController {
   async create(req, res) {
-    const { title, description, value, ingredients, categories } = req.body
+    const { title, description, value, ingredients, category } = req.body
     const user_id = req.user.id
     const picture = req.file.filename
     const diskStorage = new DiskStorage()
@@ -41,33 +41,10 @@ class PlatesController {
     )
 
     // Verificar se pelo menos uma categoria foi fornecida
-    if (!categories || categories.length === 0) {
+    if (!category || category < 1 && category > 4) {
       return res
         .status(400)
-        .json({ error: 'Não foi passado nenhuma categoria' })
-    }
-
-    // Verificar se categories é uma string
-    if (typeof categories !== 'string') {
-      return res.status(400).json({ error: 'Categories não é uma string' })
-    }
-
-    // Obter o ID da categoria com base no nome fornecido
-    const [category] = await knex('categories')
-      .where('name', categories)
-      .pluck('id')
-
-    if (!category) {
-      return res
-        .status(400)
-        .json({ error: 'Não foi passado nenhuma categoria' })
-    }
-
-    // Verificar se pelo menos uma categoria válida foi encontrada
-    if (category.length === 0) {
-      return res
-        .status(400)
-        .json({ error: 'Nenhuma categoria válida foi passada' })
+        .json({ error: 'Categoria errada' })
     }
 
     // Erro de criação inicial por falta de parametros passados pelo cliente
@@ -129,9 +106,8 @@ class PlatesController {
 
   async update(req, res) {
     const { id } = req.params
-    const { title, description, value, ingredients, categories } = req.body
+    const { title, description, value, ingredients, category } = req.body
     const user_id = req.user.id
-
     const plate = await knex('plates').where({ id }).first()
 
     if (!plate) {
@@ -152,7 +128,7 @@ class PlatesController {
       await knex('plates').where({ id }).update({ picture: filePlate })
     }
 
-    if (title || description || value || ingredients || categories) {
+    if (title || description || value || ingredients || category) {
       const updateData = {}
 
       if (title) {
@@ -196,21 +172,7 @@ class PlatesController {
 
         updateData.ingredients = JSON.stringify(ingredientIds)
       }
-
-      if (categories) {
-        // Obter o ID da categoria com base no nome fornecido
-        const [category] = await knex('categories')
-          .where('name', categories)
-          .pluck('id')
-
-        if (!category) {
-          return res
-            .status(400)
-            .json({ error: 'Não foi passada nenhuma categoria' })
-        }
-
-        updateData.category_id = category
-      }
+      updateData.category_id = category
 
       await knex('plates').where({ id }).update(updateData)
     }
