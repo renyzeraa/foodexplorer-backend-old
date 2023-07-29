@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'app',
+      name: 'foodexplorer_back-end',
       script: './src/app.js',
       instances: 'max',
       env: {
